@@ -33,5 +33,5 @@
       "processId": "${command:pickProcess}"
     }
   ],
-  "requireExactSource": false
+  // "requireExactSource": false
 }
