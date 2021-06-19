@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.DTO;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -27,9 +28,16 @@ namespace API.Controllers
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
     {
-      var users = await _userRepository.GetMembersAsync();
+      var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+      userParams.CurrentUsername = user.Username;
+
+      if (string.IsNullOrEmpty(userParams.Gender)) userParams.Gender = user.Gender == "male" ? "female" : "male";
+
+      var users = await _userRepository.GetMembersAsync(userParams);
+
+      Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 
       return Ok(users);
     }
@@ -52,6 +60,20 @@ namespace API.Controllers
       if (await _userRepository.SaveAllAsync()) return NoContent();
 
       return BadRequest("Failed to update user");
+    }
+
+    [HttpDelete("delete-user/{id}")]
+    public async Task<ActionResult> DeleteUser(int Id)
+    {
+      var user = await _userRepository.GetUserByIdAsync(Id);
+      
+      // _mapper.Map(memberDeleteDto, user);
+
+      _userRepository.Delete(user);
+
+      if (await _userRepository.SaveAllAsync()) return Ok();
+
+      return BadRequest("Failed to delete user");
     }
 
     [HttpPost("add-photo")]

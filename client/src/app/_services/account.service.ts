@@ -41,6 +41,10 @@ export class AccountService {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSource.next(user);
   }
+
+  deleteUser(id: number) {
+    return this.http.delete(this.baseUrl + 'users/delete-user/' + id, {});
+  }
   
   logout() {
     localStorage.removeItem('user');

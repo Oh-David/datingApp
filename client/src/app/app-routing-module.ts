@@ -10,6 +10,7 @@ import { MemberEditComponent } from './members/member-edit/member-edit.component
 import { MemberListComponent } from './members/member-list/member-list.component';
 import { MessagesComponent } from './messages/messages.component';
 import { AuthGuard } from './_gaurds/auth.guard';
+import { PreventAccidentalDeleteGuard } from './_gaurds/prevent-accidental-delete.guard';
 import { PreventUnsavedChangesGuard } from './_gaurds/prevent-unsaved-changes.guard';
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
       {path: 'members', component: MemberListComponent},
       {path: 'members/:username', component: MemberDetailComponent},
       {path: 'member/edit', component: MemberEditComponent, canDeactivate: [PreventUnsavedChangesGuard]},
+      {path: 'member/delete', component: MemberEditComponent, canDeactivate: [PreventAccidentalDeleteGuard]},
       {path: 'lists', component: ListsComponent},
       {path: 'messages', component: MessagesComponent}
     ]
